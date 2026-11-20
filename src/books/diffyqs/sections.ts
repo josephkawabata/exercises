@@ -11,5 +11,3 @@ export const SECS: [string, string][] = [
   ["1.8", "Exact equations"],
   ["1.9", "First-order linear PDEs"],
 ];
-
-export const secOf = (id: string) => id.split(".").slice(0, 2).join(".");

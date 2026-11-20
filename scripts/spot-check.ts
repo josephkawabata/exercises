@@ -1,7 +1,8 @@
 import katex from "katex";
-import { CARDS } from "../src/data.ts";
+import { CARDS } from "../src/books/diffyqs/data.ts";
+import { SECS } from "../src/books/diffyqs/sections.ts";
 import { check, parse, toTex, varsOf, type Field } from "../src/engine.ts";
-import { SECS, secOf } from "../src/sections.ts";
+import { secOf } from "../src/sec.ts";
 import { splitRich } from "../src/split.ts";
 
 const failures: string[] = [];

@@ -1,4 +1,4 @@
-import type { Card, Field, Rng, SF } from "./engine";
+import type { Card, Field, Rng, SF } from "../../engine";
 
 // DATA-START
 const r = String.raw;

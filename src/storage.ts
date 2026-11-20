@@ -1,6 +1,13 @@
 import type { Verdict } from "./engine";
 
-const KEY = "diffyqs-practice-v1";
+/** Older builds stored Diffy Qs progress here. Reading it once keeps those answers. */
+const LEGACY_KEYS: Record<string, string> = {
+  diffyqs: "diffyqs-practice-v1",
+};
+
+export function progressKey(bookId: string): string {
+  return "exercises:" + bookId;
+}
 
 export type Progress = {
   sec: string;
@@ -14,9 +21,9 @@ export type Progress = {
   best: Record<string, number>;
 };
 
-export function emptyProgress(): Progress {
+export function emptyProgress(defaultSection: string): Progress {
   return {
-    sec: "0.2",
+    sec: defaultSection,
     incSelf: true,
     pos: {},
     inputs: {},
@@ -80,11 +87,23 @@ function verdictMap(v: unknown): Record<string, Verdict[]> {
   return out;
 }
 
-export function loadProgress(sections: readonly string[]): Progress {
-  const base = emptyProgress();
+export function loadProgress(bookId: string, sections: readonly string[], defaultSection: string): Progress {
+  const base = emptyProgress(defaultSection);
   if (typeof localStorage === "undefined") return base;
   try {
-    const raw = localStorage.getItem(KEY);
+    const key = progressKey(bookId);
+    let raw = localStorage.getItem(key);
+    const legacy = LEGACY_KEYS[bookId];
+    if (raw == null && legacy) {
+      raw = localStorage.getItem(legacy);
+      if (raw != null) {
+        try {
+          localStorage.setItem(key, raw);
+        } catch {
+          // The old key still holds the answers for this visit.
+        }
+      }
+    }
     if (!raw) return base;
     const parsed = JSON.parse(raw) as unknown;
     if (!isObj(parsed)) return base;
@@ -103,19 +122,21 @@ export function loadProgress(sections: readonly string[]): Progress {
   }
 }
 
-export function saveProgress(progress: Progress): void {
+export function saveProgress(bookId: string, progress: Progress): void {
   if (typeof localStorage === "undefined") return;
   try {
-    localStorage.setItem(KEY, JSON.stringify(progress));
+    localStorage.setItem(progressKey(bookId), JSON.stringify(progress));
   } catch {
     // Private mode or a full disk: practice still works for this visit.
   }
 }
 
-export function clearStoredProgress(): void {
+export function clearStoredProgress(bookId: string): void {
   if (typeof localStorage === "undefined") return;
   try {
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(progressKey(bookId));
+    const legacy = LEGACY_KEYS[bookId];
+    if (legacy) localStorage.removeItem(legacy);
   } catch {
     // Ignore.
   }
