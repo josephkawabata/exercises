@@ -31,8 +31,22 @@ export function cardHref(bookId: string, card: { id: string; p?: string }): stri
 }
 
 /** "b" is an answer from the book. Anything else was worked out by Grok Bot. */
+function answerMode(book: Book): "grok" | "printed" {
+  return book.answerLabels ?? "grok";
+}
+
 function fromBook(card: { src: string }): boolean {
   return card.src === "b";
+}
+
+function sourceNote(card: Card, mode: "grok" | "printed"): string {
+  const printed = fromBook(card);
+  if (mode === "printed") {
+    if (card.f.length > 0) return printed ? "Answer key from the book." : "No answer in the book.";
+    return printed ? "Self-check card. The solution shown is the book's." : "Self-check card. No answer in the book.";
+  }
+  if (card.f.length > 0) return printed ? "Answer key from the book (answers in the back)." : "Answer key worked by Grok Bot, not from the book.";
+  return printed ? "Self-check card. The solution shown is the book's." : "Self-check card. Solution worked by Grok Bot, not from the book.";
 }
 
 function chapterOf(id: string): string {
@@ -194,6 +208,8 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
             setBest={setBest}
             prevHref={prev ? cardHref(book.id, prev.c) : undefined}
             nextHref={next ? cardHref(book.id, next.c) : undefined}
+            answerMode={answerMode(book)}
+            day={book.showDays ? opened.i + 1 : undefined}
           />
         ) : (
           <>
@@ -231,14 +247,17 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
         </div>
         {chapters.map((chapter) => (
           <div key={chapter.id} className="cluster">
-            <h3 className="cluster-title">{"Chapter " + chapter.id}</h3>
+            <h3 className="cluster-title">{(book.clusterWord ?? "Chapter ") + chapter.id}</h3>
             <div className="squares">
               {chapter.items.map((o) => {
                 const mark = status[o.i];
                 const tone = mark === "correct" ? "ok" : mark === "wrong" ? "bad" : mark === "revealed" ? "shown" : "todo";
                 const word = mark === "correct" ? "completed" : mark === "wrong" ? "tried, not correct" : mark === "revealed" ? "solution shown" : "not done";
-                const bot = !fromBook(o.c);
-                const label = cardLabel(o.c.id, o.c.p) + ", " + word + (bot ? ", answer worked out by Grok Bot, not from the book" : "");
+                const unmarked = !fromBook(o.c);
+                const mode = answerMode(book);
+                const extra = unmarked ? (mode === "printed" ? ", no answer in the book" : ", answer worked out by Grok Bot, not from the book") : "";
+                const day = book.showDays ? "Day " + (o.i + 1) + ". " : "";
+                const label = day + cardLabel(o.c.id, o.c.p) + ", " + word + extra;
                 return (
                   <a
                     key={o.i}
@@ -247,7 +266,7 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
                     aria-label={label}
                     title={label}
                   >
-                    {bot ? <span className="bot" aria-hidden="true" /> : null}
+                    {unmarked ? <span className="bot" aria-hidden="true" /> : null}
                   </a>
                 );
               })}
@@ -259,7 +278,7 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
           <span className="sq legend-sq" aria-hidden="true" /> not done
           <span className="sq bad legend-sq" aria-hidden="true" /> tried
           <span className="bot-key"><span className="bot" aria-hidden="true" /></span>
-          answer worked out by Grok Bot, not from the book
+          {answerMode(book) === "printed" ? "no answer in the book" : "answer worked out by Grok Bot, not from the book"}
         </p>
         {list.length === 0 ? <p className="card">No exercises match this filter.</p> : null}
       </section>
@@ -333,11 +352,11 @@ function CardView(props: {
   setBest: (v: Progress["best"]) => void;
   prevHref?: string;
   nextHref?: string;
+  answerMode: "grok" | "printed";
+  day?: number;
 }) {
   const { card, ci, vals, verdicts, sh, st, sec } = props;
-  const srcLine = card.f.length > 0
-    ? card.src === "b" ? "Answer key from the book (answers in the back)." : "Answer key worked by Grok Bot, not from the book."
-    : card.src === "b" ? "Self-check card. The solution shown is the book's." : "Self-check card. Solution worked by Grok Bot, not from the book.";
+  const srcLine = sourceNote(card, props.answerMode);
   const allOk = verdicts ? verdicts.every((v) => v.ok) : false;
 
   const setInp = (j: number, v: string) => {
@@ -398,7 +417,7 @@ function CardView(props: {
   return (
     <article className="card focus-card">
       <div className="card-top">
-        <div className="card-title">{cardLabel(card.id, card.p)}</div>
+        <div className="card-title">{props.day ? "Day " + props.day + " · " : ""}{cardLabel(card.id, card.p)}</div>
         <div className="muted">{"Card " + (props.at + 1) + " of " + props.total}</div>
       </div>
       <div className="muted">{srcLine}</div>

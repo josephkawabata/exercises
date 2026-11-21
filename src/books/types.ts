@@ -24,6 +24,15 @@ export type Book = BookInfo & {
   about: ReactNode;
   links: BookLink[];
   footer: string;
+  /** Heading in front of each cluster id. Diffy Qs uses "Chapter ". */
+  clusterWord?: string;
+  /** Number squares as Day 1, Day 2, in card order. */
+  showDays?: boolean;
+  /**
+   * "grok": squares without a book answer are marked as worked out by Grok Bot.
+   * "printed": those squares are marked as having no answer in the book.
+   */
+  answerLabels?: "grok" | "printed";
 };
 
 export type BookEntry = BookInfo & {

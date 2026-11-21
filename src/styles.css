@@ -482,6 +482,7 @@ a.btn {
   font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif;
   font-size: 1.12rem;
   line-height: 1.55;
+  white-space: pre-wrap;
 }
 
 .slopes {

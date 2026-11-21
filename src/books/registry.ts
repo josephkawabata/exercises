@@ -1,4 +1,5 @@
 import { diffyqsInfo } from "./diffyqs/info";
+import { econ345Info } from "./econ345/info";
 import type { BookEntry } from "./types";
 
 export type { BookEntry };
@@ -16,6 +17,10 @@ export const BOOKS: BookEntry[] = [
   {
     ...diffyqsInfo,
     load: () => import("./diffyqs").then((mod) => mod.diffyqs),
+  },
+  {
+    ...econ345Info,
+    load: () => import("./econ345").then((mod) => mod.econ345),
   },
 ];
 
