@@ -1,12 +1,18 @@
 import type { Card, Field } from "../../engine";
+import { EXTRA } from "./more";
 
 const r = String.raw;
-const SRC = "Godwin, Introduction to Econometrics. https://rtgodwin.com/introeconometrics.pdf";
-
 const CARDS: Card[] = [];
 
 function step(id: string, q: string, section: string, f: Field[] = [], bk?: string): void {
-  const c: Card = { id, q, f, h: "", src: f.length > 0 || bk ? "b" : "n", ctx: SRC + " Section " + section + "." };
+  const c: Card = {
+    id,
+    q,
+    f,
+    h: "",
+    src: f.length > 0 || bk ? "b" : "n",
+    ctx: "Source: Ryan T. Godwin, Introduction to Econometrics, section " + section + ". CC BY-NC-SA 4.0. https://rtgodwin.com/introeconometrics.pdf",
+  };
   if (bk) c.bk = bk;
   CARDS.push(c);
 }
@@ -581,6 +587,50 @@ In the second stage, we estimate the population model by LS, but instead of usin
 3. An instrument must be (i) uncorrelated with the missing variable, and (ii) correlated with the “problem” $X$ variable (the “problem” being the correlation with the missing variable).`,
 );
 
+const EXERCISE: Record<string, string> = {
+  "1.3": "Exercise 4.7, question 4",
+  "1.5": "Exercise 4.7, question 1(b) and question 1(d)",
+  "2.1": "Exercise 4.7, question 2",
+  "2.3": "Exercise 6.6, question 2",
+  "2.4": "Exercise 6.6, question 4",
+  "3.1": "Exercise 6.6, question 5 and question 6",
+  "3.2": "Exercise 5.5, question 5",
+  "4.1": "Exercise 8.4, question 1 and question 2",
+  "4.2": "Exercise 8.4, question 4 and question 5",
+  "4.3": "Exercise 10.3, question 1, question 3, and question 4",
+  "4.4": "Exercise 11.6, question 1, question 2, and question 3",
+};
+
+const FIGS: Record<string, { src: string; cap: string }[]> = {
+  "1.2": [
+    { src: "econ345/p-043.png", cap: "Figure 4.1: A typical demand “curve”. Note this is an “inverse” demand curve (quantity demanded is on the vertical axis, and price on the horizontal axis)." },
+    { src: "econ345/p-044.png", cap: "Figure 4.2: Per capita consumption, and price, of spirits. Choosing a line through the data necessarily chooses the slope of the line, b, which determines how much Qd decreases for an increase in P." },
+    { src: "econ345/p-045.png", cap: "Figure 4.3: Income and consumption in the U.K. (Verbeek and Marno, 2008)." },
+  ],
+  "1.4": [
+    { src: "econ345/p-046.png", cap: "Figure 4.4: A simple data set with the estimated OLS line in blue. b0 is the OLS intercept, and b1 is the OLS slope." },
+    { src: "econ345/p-047.png", cap: "Figure 4.5: The OLS predicted values shown by ×." },
+    { src: "econ345/p-048.png", cap: "Figure 4.6: The OLS residuals (ei) are the vertical distances between the actual data points (circles) and the OLS predicted values (×)." },
+  ],
+  "4.1": [
+    { src: "econ345/p-090.png", cap: "Figure 8.1: Price of diamonds, and carats, with OLS estimated line." },
+  ],
+  "4.3": [
+    { src: "econ345/p-117.png", cap: "Figure 10.1: Possible heteroskedasticity in the CPS data. The variance in wage may be increasing as education increases. The reasoning is that individuals who have not completed highschool (or university) are precluded from many high-paying jobs (doctors, lawyers, etc.). However, having many years of education does not preclude individuals from low-paying jobs. The spread in wages is higher for highly educated individuals. Figure 10.2: Homoskedasticity. The average squared vertical distance from the data points to the OLS estimated line is the same, regardless of the value of X." },
+    { src: "econ345/p-118.png", cap: "Figure 10.3: Heteroskedasticity. The squared vertical distance of a data point from the OLS estimated line is influenced by X." },
+  ],
+  "4.4": [
+    { src: "econ345/p-123.png", cap: "Figure 11.1: A missing m variable that is correlated with x and that determines y will make estimation of the effect of x on y difficult (or impossible)." },
+  ],
+};
+
+CARDS.push(...EXTRA);
+for (const c of CARDS) {
+  const ex = EXERCISE[c.id];
+  if (ex && c.ctx) c.ctx = c.ctx.replace(" CC BY", " " + ex + ". CC BY");
+  const figs = FIGS[c.id];
+  if (figs) c.figs = figs;
+}
 CARDS.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
 export { CARDS };

@@ -421,8 +421,18 @@ function CardView(props: {
         <div className="muted">{"Card " + (props.at + 1) + " of " + props.total}</div>
       </div>
       <div className="muted">{srcLine}</div>
-      {card.ctx ? <div className="muted context prose">{"From the text: "}<Rich text={card.ctx} /></div> : null}
+      {card.ctx ? (
+        <div className="muted context prose">
+          {card.ctx.startsWith("Source:") ? <Rich text={card.ctx} /> : <>{"From the text: "}<Rich text={card.ctx} /></>}
+        </div>
+      ) : null}
       <div className="question prose"><Rich text={card.q} /></div>
+      {card.figs?.map((f) => (
+        <figure className="fig" key={f.src}>
+          <img src={`${import.meta.env.BASE_URL}${f.src}`} alt="" />
+          <figcaption className="muted"><Rich text={f.cap} /></figcaption>
+        </figure>
+      ))}
       {card.sf ? (
         <div className="slopes">
           {card.sf.map((x, k) => <SlopeField key={k} f={x.f} lab={x.lab} />)}

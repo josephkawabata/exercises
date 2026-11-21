@@ -15,7 +15,8 @@ type Field = { l?: string } & (
   | { t: "if"; M: string; N: string; d: Rng[]; a: string }
 );
 type SF = { f: string; lab?: string };
-type Card = { id: string; q: string; f: Field[]; h: string; src: string; p?: string; sol?: string[]; ctx?: string; bk?: string; sf?: SF[]; ssf?: SF; distinct?: number[] };
+type Fig = { src: string; cap: string };
+type Card = { id: string; q: string; f: Field[]; h: string; src: string; p?: string; sol?: string[]; ctx?: string; bk?: string; figs?: Fig[]; sf?: SF[]; ssf?: SF; distinct?: number[] };
 type Verdict = { ok: boolean; msg?: string };
 
 // ---------- expression parser ----------
@@ -460,5 +461,5 @@ function varsOf(f: Field): string[] {
   return [];
 }
 
-export type { Rng, Field, SF, Card, Verdict, Node };
+export type { Rng, Field, SF, Fig, Card, Verdict, Node };
 export { check, sameFn, varsOf, toTex, parse, evalNode };

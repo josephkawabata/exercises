@@ -51,15 +51,28 @@ const auto = CARDS.filter((c) => c.f.length > 0);
 const selfBook = CARDS.filter((c) => c.f.length === 0 && c.src === "b");
 const selfNone = CARDS.filter((c) => c.f.length === 0 && c.src !== "b");
 
-if (CARDS.length !== 15) {
-  console.error("expected 15 days, got " + CARDS.length);
+if (CARDS.length !== 118) {
+  console.error("expected 118 days, got " + CARDS.length);
   process.exit(1);
 }
 
 let checked = 0;
 for (const card of auto) {
   card.f.forEach((f, j) => {
-    if (f.t === "mc") return;
+    if (f.t === "mc") {
+      const verdict = check(f, String(f.a));
+      checked++;
+      if (!verdict.ok) {
+        console.error("mc key failed", card.id, j, verdict);
+        process.exit(1);
+      }
+      const wrong = check(f, String((f.a + 1) % f.o.length));
+      if (wrong.ok) {
+        console.error("mc wrong answer accepted", card.id, j);
+        process.exit(1);
+      }
+      return;
+    }
     const input = f.t === "set" ? f.a.join(", ") : f.a;
     const verdict = check(f, input);
     checked++;

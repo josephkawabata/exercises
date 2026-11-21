@@ -485,6 +485,22 @@ a.btn {
   white-space: pre-wrap;
 }
 
+.fig {
+  margin: 14px 0;
+}
+
+.fig img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line, var(--border-strong));
+}
+
+.fig figcaption {
+  margin-top: 6px;
+  font-size: 13.5px;
+}
+
 .slopes {
   display: flex;
   flex-wrap: wrap;
