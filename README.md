@@ -14,7 +14,7 @@ The site is published at <https://josephkawabata.github.io/exercises/>.
 2. Add `src/books/<id>/index.tsx` that exports a `Book`: that same info, plus the section list and the exercise cards. Put the cards in their own module next to it.
 3. Register it in `src/books/registry.ts`.
 
-The home page lists whatever is in the registry. The practice page for a book is `#/<id>` (for example `#/diffyqs`). The shared expression checker is `src/engine.ts`, and the shared card UI is `src/Practice.tsx`. Saved answers for that book are stored under the localStorage key `exercises:<id>`.
+The home page lists whatever is in the registry. A book’s exercise grid is `#/<id>` (for example `#/diffyqs`). One exercise is `#/<id>/<exercise id>`, and a part adds another segment (`#/diffyqs/0.2.14/b`). The shared expression checker is `src/engine.ts`, and the shared card UI is `src/Practice.tsx`. Saved answers for that book are stored under the localStorage key `exercises:<id>`.
 
 ## Develop
 

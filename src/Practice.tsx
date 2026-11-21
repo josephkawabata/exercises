@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { Book } from "./books/types";
 import { check, evalNode, parse, sameFn, toTex, varsOf, type Card, type Field, type Verdict } from "./engine";
 import { MathInline, Rich } from "./rich";
@@ -19,6 +19,15 @@ const HOWTO: [string, string][] = [
 
 function cardLabel(id: string, part?: string): string {
   return "Exercise " + id + (part ? " (" + part + ")" : "");
+}
+
+export function cardKey(card: { id: string; p?: string }): string {
+  return card.p ? card.id + "/" + card.p : card.id;
+}
+
+export function cardHref(bookId: string, card: { id: string; p?: string }): string {
+  if (!card.p) return "#/" + bookId + "/" + card.id;
+  return "#/" + bookId + "/" + card.id + "/" + encodeURIComponent(card.p);
 }
 
 function keyNote(f: Field): string {
@@ -65,7 +74,7 @@ function preview(f: Field, value: string): ReactNode {
   }
 }
 
-export function Practice({ book }: { book: Book }) {
+export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: string | null }) {
   const cards = book.cards;
   const sections = book.sections;
   const [saved] = useState(() => loadProgress(book.id, sections.map(([id]) => id), sections[0]?.[0] ?? ""));
@@ -78,9 +87,6 @@ export function Practice({ book }: { book: Book }) {
   const [shown, setShown] = useState(saved.shown);
   const [streak, setStreak] = useState(saved.streak);
   const [best, setBest] = useState(saved.best);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const place = useRef<string | null>(null);
-
   useEffect(() => {
     saveProgress(book.id, { sec, incSelf, pos, inputs, res, status, shown, streak, best });
   }, [book.id, sec, incSelf, pos, inputs, res, status, shown, streak, best]);
@@ -98,21 +104,26 @@ export function Practice({ book }: { book: Book }) {
     return m;
   }, [cards, incSelf]);
 
-  const at = Math.max(0, Math.min(pos[sec] ?? 0, list.length - 1));
-  const cur = list[at];
+  const openedIndex = openKey == null ? -1 : cards.findIndex((c) => cardKey(c) === openKey);
+  const opened = openedIndex >= 0 ? { c: cards[openedIndex], i: openedIndex } : undefined;
 
   useEffect(() => {
-    const key = sec + "|" + at + "|" + incSelf;
-    if (place.current === null) {
-      place.current = key;
-      return;
-    }
-    if (place.current === key) return;
-    place.current = key;
-    cardRef.current?.scrollIntoView({ block: "start" });
-  }, [sec, at, incSelf]);
+    if (openedIndex < 0) return;
+    const card = cards[openedIndex];
+    const section = secOf(card.id);
+    const sequence = cards
+      .map((c, i) => ({ c, i }))
+      .filter((o) => secOf(o.c.id) === section && (incSelf || o.c.f.length > 0 || o.i === openedIndex));
+    const idx = sequence.findIndex((o) => o.i === openedIndex);
+    setSec((cur) => (cur === section ? cur : section));
+    if (idx >= 0) setPos((p) => (p[section] === idx ? p : { ...p, [section]: idx }));
+  }, [openedIndex, cards, incSelf]);
 
-  const go = (k: number) => setPos({ ...pos, [sec]: Math.max(0, Math.min(k, list.length - 1)) });
+  useEffect(() => {
+    if (openKey && opened) document.title = cardLabel(opened.c.id, opened.c.p);
+    else if (openKey) document.title = "Exercise not found";
+    else document.title = book.practiceTitle;
+  }, [openKey, opened, book.practiceTitle]);
 
   const reset = () => {
     if (!window.confirm("Clear saved answers and scores for this book on this device?")) return;
@@ -128,6 +139,53 @@ export function Practice({ book }: { book: Book }) {
 
   const nCorrect = list.filter((o) => status[o.i] === "correct").length;
   const totalCorrect = cards.filter((_c, i) => status[i] === "correct").length;
+
+  if (openKey) {
+    const section = opened ? secOf(opened.c.id) : sec;
+    const sequence = cards
+      .map((c, i) => ({ c, i }))
+      .filter((o) => secOf(o.c.id) === section && (incSelf || o.c.f.length > 0 || o.i === opened?.i));
+    const at = opened ? sequence.findIndex((o) => o.i === opened.i) : -1;
+    const prev = at > 0 ? sequence[at - 1] : undefined;
+    const next = at >= 0 && at < sequence.length - 1 ? sequence[at + 1] : undefined;
+    return (
+      <div className="page focus">
+        <a className="crumb" href={"#/" + book.id}>Exercises</a>
+        {opened ? (
+          <CardView
+            at={Math.max(0, at)}
+            total={sequence.length}
+            ci={opened.i}
+            card={opened.c}
+            vals={inputs[opened.i] || []}
+            verdicts={res[opened.i]}
+            sh={shown[opened.i] ?? 0}
+            st={status[opened.i]}
+            inputs={inputs}
+            res={res}
+            status={status}
+            shown={shown}
+            streak={streak}
+            best={best}
+            sec={section}
+            setInputs={setInputs}
+            setRes={setRes}
+            setStatus={setStatus}
+            setShown={setShown}
+            setStreak={setStreak}
+            setBest={setBest}
+            prevHref={prev ? cardHref(book.id, prev.c) : undefined}
+            nextHref={next ? cardHref(book.id, next.c) : undefined}
+          />
+        ) : (
+          <>
+            <h1>Exercise not found</h1>
+            <p className="summary">That exercise isn’t in this book.</p>
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="page">
@@ -161,58 +219,28 @@ export function Practice({ book }: { book: Book }) {
           </p>
           <button type="button" className="linkish" onClick={reset}>Clear saved progress</button>
         </div>
-        <div className="dots">
-          {list.map((o, k) => {
+        <div className="tiles">
+          {list.map((o) => {
             const mark = status[o.i];
             const tone = mark === "correct" ? "ok" : mark === "wrong" ? "bad" : mark === "revealed" ? "shown" : "todo";
-            const label = cardLabel(o.c.id, o.c.p);
+            const glyph = mark === "correct" ? "✓" : mark === "wrong" ? "✗" : mark === "revealed" ? "◆" : "·";
+            const word = mark === "correct" ? "correct" : mark === "wrong" ? "missed" : mark === "revealed" ? "solution shown" : "not done";
             return (
-              <button
+              <a
                 key={o.i}
-                type="button"
-                className={"dot " + tone + (k === at ? " current" : "")}
-                onClick={() => go(k)}
-                title={label}
-                aria-label={label}
-                aria-current={k === at ? "true" : undefined}
-              />
+                className={"tile " + tone}
+                href={cardHref(book.id, o.c)}
+                aria-label={cardLabel(o.c.id, o.c.p) + ", " + word}
+              >
+                <span className="tile-id">{o.c.id}</span>
+                {o.c.p ? <span className="tile-part">{o.c.p}</span> : null}
+                <span className="tile-mark" aria-hidden="true">{glyph}</span>
+              </a>
             );
           })}
         </div>
-        <p className="muted legend">Squares: green correct, red missed, amber solution shown, gray not done yet. Click one to jump to it.</p>
-
-        {cur ? (
-          <CardView
-            cardRef={cardRef}
-            at={at}
-            total={list.length}
-            ci={cur.i}
-            card={cur.c}
-            vals={inputs[cur.i] || []}
-            verdicts={res[cur.i]}
-            sh={shown[cur.i] ?? 0}
-            st={status[cur.i]}
-            inputs={inputs}
-            res={res}
-            status={status}
-            shown={shown}
-            streak={streak}
-            best={best}
-            sec={sec}
-            setInputs={setInputs}
-            setRes={setRes}
-            setStatus={setStatus}
-            setShown={setShown}
-            setStreak={setStreak}
-            setBest={setBest}
-            onPrev={() => go(at - 1)}
-            onNext={() => go(at + 1)}
-            prevDisabled={at === 0}
-            nextDisabled={at >= list.length - 1}
-          />
-        ) : (
-          <p className="card">No cards in this section with the current filter.</p>
-        )}
+        <p className="muted legend">Green is correct, red was missed, amber means the solution was shown. Choose one to practice it.</p>
+        {list.length === 0 ? <p className="card">No cards in this section with the current filter.</p> : null}
       </section>
 
       <details className="fold">
@@ -261,7 +289,6 @@ export function Practice({ book }: { book: Book }) {
 }
 
 function CardView(props: {
-  cardRef: RefObject<HTMLDivElement | null>;
   at: number;
   total: number;
   ci: number;
@@ -283,10 +310,8 @@ function CardView(props: {
   setShown: (v: Progress["shown"]) => void;
   setStreak: (v: Progress["streak"]) => void;
   setBest: (v: Progress["best"]) => void;
-  onPrev: () => void;
-  onNext: () => void;
-  prevDisabled: boolean;
-  nextDisabled: boolean;
+  prevHref?: string;
+  nextHref?: string;
 }) {
   const { card, ci, vals, verdicts, sh, st, sec } = props;
   const srcLine = card.f.length > 0
@@ -350,7 +375,7 @@ function CardView(props: {
   };
 
   return (
-    <article className="card" ref={props.cardRef}>
+    <article className="card focus-card">
       <div className="card-top">
         <div className="card-title">{cardLabel(card.id, card.p)}</div>
         <div className="muted">{"Card " + (props.at + 1) + " of " + props.total}</div>
@@ -429,8 +454,8 @@ function CardView(props: {
         <button type="button" className="btn" onClick={reveal} disabled={(sh & 2) !== 0}>
           {sh & 2 ? "Solution shown" : "Show solution"}
         </button>
-        <button type="button" className="btn" onClick={props.onPrev} disabled={props.prevDisabled}>Previous</button>
-        <button type="button" className="btn" onClick={props.onNext} disabled={props.nextDisabled}>Next</button>
+        {props.prevHref ? <a className="btn" href={props.prevHref}>Previous</a> : <span className="btn" aria-disabled="true">Previous</span>}
+        {props.nextHref ? <a className="btn" href={props.nextHref}>Next</a> : <span className="btn" aria-disabled="true">Next</span>}
       </div>
 
       {sh & 1 && card.h ? (

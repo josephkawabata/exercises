@@ -4,15 +4,45 @@ import type { Book } from "./books/types";
 import { Home, MissingBook } from "./Home";
 import { Practice } from "./Practice";
 
-function slugFromHash(hash: string): string | null {
+export type BookRoute = { bookId: string; card: string | null };
+
+/** `#/`, `#/<book>`, or `#/<book>/<exercise id>` (a part is an extra segment). */
+export function routeFromHash(hash: string): BookRoute | null {
   let path = hash.startsWith("#") ? hash.slice(1) : hash;
   path = path.replace(/^\/+|\/+$/g, "");
   if (!path) return null;
-  try {
-    return decodeURIComponent(path);
-  } catch {
-    return path;
+  const cut = path.indexOf("/");
+  if (cut < 0) {
+    try {
+      return { bookId: decodeURIComponent(path), card: null };
+    } catch {
+      return { bookId: path, card: null };
+    }
   }
+  const bookRaw = path.slice(0, cut);
+  const rest = path.slice(cut + 1);
+  let bookId = bookRaw;
+  try {
+    bookId = decodeURIComponent(bookRaw);
+  } catch {
+    bookId = bookRaw;
+  }
+  const partCut = rest.indexOf("/");
+  if (partCut < 0) {
+    try {
+      return { bookId, card: decodeURIComponent(rest) };
+    } catch {
+      return { bookId, card: rest };
+    }
+  }
+  const id = rest.slice(0, partCut);
+  let part = rest.slice(partCut + 1);
+  try {
+    part = decodeURIComponent(part);
+  } catch {
+    // Keep the raw segment.
+  }
+  return { bookId, card: id + "/" + part };
 }
 
 export default function App() {
@@ -24,20 +54,21 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  const slug = slugFromHash(hash);
-  const entry = slug ? bookEntry(slug) : undefined;
+  const route = routeFromHash(hash);
+  const entry = route ? bookEntry(route.bookId) : undefined;
+  const routeKey = route ? route.bookId + "\n" + (route.card ?? "") : "";
 
   useEffect(() => {
-    document.title = "Exercise practice";
+    if (!route) document.title = "Exercise practice";
     window.scrollTo(0, 0);
-  }, [slug]);
+  }, [routeKey]);
 
-  if (!slug) return <Home />;
-  if (!entry) return <MissingBook slug={slug} />;
-  return <BookPractice key={entry.id} entry={entry} />;
+  if (!route) return <Home />;
+  if (!entry) return <MissingBook slug={route.bookId} />;
+  return <BookPractice key={entry.id} entry={entry} card={route.card} />;
 }
 
-function BookPractice({ entry }: { entry: BookEntry }) {
+function BookPractice({ entry, card }: { entry: BookEntry; card: string | null }) {
   const [book, setBook] = useState<Book | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -56,10 +87,6 @@ function BookPractice({ entry }: { entry: BookEntry }) {
     };
   }, [entry]);
 
-  useEffect(() => {
-    if (book) document.title = book.practiceTitle;
-  }, [book]);
-
   if (failed) {
     return (
       <div className="page">
@@ -77,5 +104,5 @@ function BookPractice({ entry }: { entry: BookEntry }) {
       </div>
     );
   }
-  return <Practice book={book} />;
+  return <Practice book={book} cardKey={card} />;
 }

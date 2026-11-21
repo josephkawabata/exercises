@@ -9,7 +9,7 @@ export type { BookEntry };
  * To add one:
  * 1. Create `src/books/<id>/info.ts` with the title, author, license, source link, description, and chapters.
  * 2. Create `src/books/<id>/index.tsx` that exports a `Book` (that info, plus sections and cards).
- * 3. Append an entry here. The practice page is then `#/<id>`.
+ * 3. Append an entry here. The exercise grid is `#/<id>`, and one exercise is `#/<id>/<exercise id>`.
  * Saved answers for that book live in localStorage under `exercises:<id>`.
  */
 export const BOOKS: BookEntry[] = [
