@@ -30,6 +30,23 @@ export function cardHref(bookId: string, card: { id: string; p?: string }): stri
   return "#/" + bookId + "/" + card.id + "/" + encodeURIComponent(card.p);
 }
 
+/** "b" is an answer from the book. Anything else was worked out by Grok Bot. */
+function fromBook(card: { src: string }): boolean {
+  return card.src === "b";
+}
+
+function chapterOf(id: string): string {
+  return id.split(".")[0] || id;
+}
+
+type AnswerFilter = "all" | "book";
+
+function inView(card: Card, filter: AnswerFilter, includeSelf: boolean): boolean {
+  if (!includeSelf && card.f.length === 0) return false;
+  if (filter === "book" && !fromBook(card)) return false;
+  return true;
+}
+
 function keyNote(f: Field): string {
   if (f.t === "gen") return " (any equivalent form with C is accepted)";
   if (f.t === "res") return " (one example; any correct solution is accepted)";
@@ -87,22 +104,25 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
   const [shown, setShown] = useState(saved.shown);
   const [streak, setStreak] = useState(saved.streak);
   const [best, setBest] = useState(saved.best);
+  const [answerFilter, setAnswerFilter] = useState<AnswerFilter>("all");
   useEffect(() => {
     saveProgress(book.id, { sec, incSelf, pos, inputs, res, status, shown, streak, best });
   }, [book.id, sec, incSelf, pos, inputs, res, status, shown, streak, best]);
 
   const list = useMemo(
-    () => cards.map((c, i) => ({ c, i })).filter((o) => secOf(o.c.id) === sec && (incSelf || o.c.f.length > 0)),
-    [cards, sec, incSelf],
+    () => cards.map((c, i) => ({ c, i })).filter((o) => inView(o.c, answerFilter, incSelf)),
+    [cards, answerFilter, incSelf],
   );
-  const counts = useMemo(() => {
-    const m: Record<string, number> = {};
-    for (const c of cards) {
-      const k = secOf(c.id);
-      if (incSelf || c.f.length > 0) m[k] = (m[k] ?? 0) + 1;
+  const chapters = useMemo(() => {
+    const groups: { id: string; items: typeof list }[] = [];
+    for (const item of list) {
+      const id = chapterOf(item.c.id);
+      const last = groups[groups.length - 1];
+      if (!last || last.id !== id) groups.push({ id, items: [item] });
+      else last.items.push(item);
     }
-    return m;
-  }, [cards, incSelf]);
+    return groups;
+  }, [list]);
 
   const openedIndex = openKey == null ? -1 : cards.findIndex((c) => cardKey(c) === openKey);
   const opened = openedIndex >= 0 ? { c: cards[openedIndex], i: openedIndex } : undefined;
@@ -113,11 +133,11 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
     const section = secOf(card.id);
     const sequence = cards
       .map((c, i) => ({ c, i }))
-      .filter((o) => secOf(o.c.id) === section && (incSelf || o.c.f.length > 0 || o.i === openedIndex));
+      .filter((o) => secOf(o.c.id) === section && (inView(o.c, answerFilter, incSelf) || o.i === openedIndex));
     const idx = sequence.findIndex((o) => o.i === openedIndex);
     setSec((cur) => (cur === section ? cur : section));
     if (idx >= 0) setPos((p) => (p[section] === idx ? p : { ...p, [section]: idx }));
-  }, [openedIndex, cards, incSelf]);
+  }, [openedIndex, cards, incSelf, answerFilter]);
 
   useEffect(() => {
     if (openKey && opened) document.title = cardLabel(opened.c.id, opened.c.p);
@@ -138,13 +158,11 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
   };
 
   const nCorrect = list.filter((o) => status[o.i] === "correct").length;
-  const totalCorrect = cards.filter((_c, i) => status[i] === "correct").length;
 
   if (openKey) {
-    const section = opened ? secOf(opened.c.id) : sec;
     const sequence = cards
       .map((c, i) => ({ c, i }))
-      .filter((o) => secOf(o.c.id) === section && (incSelf || o.c.f.length > 0 || o.i === opened?.i));
+      .filter((o) => inView(o.c, answerFilter, incSelf) || o.i === opened?.i);
     const at = opened ? sequence.findIndex((o) => o.i === opened.i) : -1;
     const prev = at > 0 ? sequence[at - 1] : undefined;
     const next = at >= 0 && at < sequence.length - 1 ? sequence[at + 1] : undefined;
@@ -167,7 +185,7 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
             shown={shown}
             streak={streak}
             best={best}
-            sec={section}
+            sec={opened ? secOf(opened.c.id) : sec}
             setInputs={setInputs}
             setRes={setRes}
             setStatus={setStatus}
@@ -197,50 +215,53 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
 
       <section className="block" aria-labelledby="practice-heading">
         <h2 id="practice-heading">Practice</h2>
-        <div className="controls">
-          <label className="field grow">
-            <span>Section</span>
-            <select value={sec} onChange={(e) => setSec(e.target.value)}>
-              {sections.map(([k, title]) => (
-                <option key={k} value={k}>
-                  {k + " " + title + " (" + (counts[k] ?? 0) + ")"}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="filters">
+          <div className="seg" role="group" aria-label="Which exercises">
+            <button type="button" aria-pressed={answerFilter === "all"} onClick={() => setAnswerFilter("all")}>All</button>
+            <button type="button" aria-pressed={answerFilter === "book"} onClick={() => setAnswerFilter("book")}>Textbook answers</button>
+          </div>
           <label className="toggle">
             <input type="checkbox" checked={incSelf} onChange={(e) => setIncSelf(e.target.checked)} />
             Include self-check cards
           </label>
         </div>
         <div className="score-row">
-          <p className="muted">
-            {"Section score: " + nCorrect + " of " + list.length + " correct · Streak: " + (streak[sec] ?? 0) + " · Best streak: " + (best[sec] ?? 0) + " · All sections: " + totalCorrect + " correct"}
-          </p>
+          <p className="muted">{nCorrect + " of " + list.length + " correct"}</p>
           <button type="button" className="linkish" onClick={reset}>Clear saved progress</button>
         </div>
-        <div className="tiles">
-          {list.map((o) => {
-            const mark = status[o.i];
-            const tone = mark === "correct" ? "ok" : mark === "wrong" ? "bad" : mark === "revealed" ? "shown" : "todo";
-            const glyph = mark === "correct" ? "✓" : mark === "wrong" ? "✗" : mark === "revealed" ? "◆" : "·";
-            const word = mark === "correct" ? "correct" : mark === "wrong" ? "missed" : mark === "revealed" ? "solution shown" : "not done";
-            return (
-              <a
-                key={o.i}
-                className={"tile " + tone}
-                href={cardHref(book.id, o.c)}
-                aria-label={cardLabel(o.c.id, o.c.p) + ", " + word}
-              >
-                <span className="tile-id">{o.c.id}</span>
-                {o.c.p ? <span className="tile-part">{o.c.p}</span> : null}
-                <span className="tile-mark" aria-hidden="true">{glyph}</span>
-              </a>
-            );
-          })}
-        </div>
-        <p className="muted legend">Green is correct, red was missed, amber means the solution was shown. Choose one to practice it.</p>
-        {list.length === 0 ? <p className="card">No cards in this section with the current filter.</p> : null}
+        {chapters.map((chapter) => (
+          <div key={chapter.id} className="cluster">
+            <h3 className="cluster-title">{"Chapter " + chapter.id}</h3>
+            <div className="squares">
+              {chapter.items.map((o) => {
+                const mark = status[o.i];
+                const tone = mark === "correct" ? "ok" : mark === "wrong" ? "bad" : mark === "revealed" ? "shown" : "todo";
+                const word = mark === "correct" ? "completed" : mark === "wrong" ? "tried, not correct" : mark === "revealed" ? "solution shown" : "not done";
+                const bot = !fromBook(o.c);
+                const label = cardLabel(o.c.id, o.c.p) + ", " + word + (bot ? ", answer worked out by Grok Bot, not from the book" : "");
+                return (
+                  <a
+                    key={o.i}
+                    className={"sq " + tone}
+                    href={cardHref(book.id, o.c)}
+                    aria-label={label}
+                    title={label}
+                  >
+                    {bot ? <span className="bot" aria-hidden="true" /> : null}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+        <p className="legend">
+          <span className="sq ok legend-sq" aria-hidden="true" /> correct
+          <span className="sq legend-sq" aria-hidden="true" /> not done
+          <span className="sq bad legend-sq" aria-hidden="true" /> tried
+          <span className="bot-key"><span className="bot" aria-hidden="true" /></span>
+          answer worked out by Grok Bot, not from the book
+        </p>
+        {list.length === 0 ? <p className="card">No exercises match this filter.</p> : null}
       </section>
 
       <details className="fold">
