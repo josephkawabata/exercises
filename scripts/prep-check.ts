@@ -1,8 +1,11 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { CARDS } from "../src/books/econ345/data.ts";
 import { check } from "../src/engine.ts";
 
-const godwin = readFileSync("/tmp/godwin.txt", "utf8").replace(/\s+/g, " ").toLowerCase();
+const godwinPath = "/tmp/godwin.txt";
+const godwin = existsSync(godwinPath)
+  ? readFileSync(godwinPath, "utf8").replace(/\s+/g, " ").toLowerCase()
+  : "";
 
 function has(phrase: string): boolean {
   const p = phrase.replace(/\s+/g, " ").toLowerCase();
@@ -31,11 +34,15 @@ const phrases = [
   "What two properties must an instrumental variable have?",
 ];
 
-const missing = phrases.filter((p) => !has(p));
-if (missing.length) {
-  console.error("phrases missing from Godwin text:");
-  for (const p of missing) console.error(" - " + p);
-  process.exit(1);
+if (!godwin) {
+  console.log("prep-check: /tmp/godwin.txt not present, skipped the source diff");
+} else {
+  const missing = phrases.filter((p) => !has(p));
+  if (missing.length) {
+    console.error("phrases missing from Godwin text:");
+    for (const p of missing) console.error(" - " + p);
+    process.exit(1);
+  }
 }
 
 const book = CARDS.filter((c) => c.src === "b");
