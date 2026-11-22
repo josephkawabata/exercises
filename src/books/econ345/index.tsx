@@ -41,10 +41,13 @@ export const econ345: Book = {
         Wessel N. van Wieringen, Lecture notes on ridge regression. CC BY-NC-SA 4.0. <a href="https://arxiv.org/pdf/1509.09169">https://arxiv.org/pdf/1509.09169</a>
       </p>
       <p>
-        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Changes: formatted for the web and split into steps. Non-commercial. Four figures whose points are missing from Godwin’s PDF are labeled recreation.
+        Michael Creel, Econometrics. Copyright Michael Creel, MIT License. <a href="https://github.com/mcreel/Econometrics/blob/main/LICENSE">LICENSE</a>. <a href="https://github.com/mcreel/Econometrics/raw/main/econometrics.pdf">econometrics.pdf</a>
       </p>
       <p>
-        Not in these open books, so not on this path: seemingly unrelated regressions; random effects (the panel squares are fixed effects and the within estimator); the order and rank conditions and three-stage least squares for a simultaneous system. The demand-and-supply system itself is included.
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. <a href="https://opensource.org/license/mit">MIT License</a>. Changes: formatted for the web and split into steps. Non-commercial, except the Creel excerpts, which keep the MIT terms. Four figures whose points are missing from Godwin’s PDF are labeled recreation. Kaplan figures 12.1 and 12.2 are cropped from the book.
+      </p>
+      <p>
+        Creel’s open book supplies seemingly unrelated regressions, random effects and the Hausman test, the order and rank conditions, and three-stage least squares. A line in the SUR algebra is printed as X = Iₙ ⊗ X; it is kept as printed and flagged on that square. What these books still do not carry, and this path does not invent, is a full GMM chapter. The 366 syllabus does not require one.
       </p>
     </>
   ),
@@ -53,8 +56,10 @@ export const econ345: Book = {
     { title: "Econometrics I (PDF)", site: "rtgodwin.com", href: "https://rtgodwin.com/econometrics1.pdf" },
     { title: "Econometrics I", site: "agaggero.github.io", href: "https://agaggero.github.io/econometrics-i/" },
     { title: "Introduction to Econometrics with R", site: "econometrics-with-r.org", href: "https://www.econometrics-with-r.org/" },
+    { title: "Creel, Econometrics (PDF)", site: "github.com/mcreel", href: "https://github.com/mcreel/Econometrics/raw/main/econometrics.pdf" },
+    { title: "Creel MIT License", site: "github.com/mcreel", href: "https://github.com/mcreel/Econometrics/blob/main/LICENSE" },
     { title: "CC BY-NC-SA 4.0", site: "creativecommons.org", href: "https://creativecommons.org/licenses/by-nc-sa/4.0/" },
     { title: "CC BY 4.0", site: "creativecommons.org", href: "https://creativecommons.org/licenses/by/4.0/" },
   ],
-  footer: "Godwin, Gaggero, Hanck, Arnold, Gerber, Schmelzer, Kaplan, and van Wieringen. CC BY-NC-SA 4.0, and CC BY 4.0 for Gaggero. Non-commercial. Changes: formatted for the web and split into steps.",
+  footer: "Godwin, Gaggero, Hanck, Arnold, Gerber, Schmelzer, Kaplan, van Wieringen, and Creel. CC BY-NC-SA 4.0, CC BY 4.0 for Gaggero, and the MIT License for Creel. Changes: formatted for the web and split into steps.",
 };

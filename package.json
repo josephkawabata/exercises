@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "check": "tsx scripts/spot-check.ts && tsx scripts/prep-check.ts"
+    "check": "tsx scripts/spot-check.ts && tsx scripts/prep-check.ts && python3 scripts/verbatim-check.py"
   },
   "dependencies": {
     "katex": "^0.16.22",
