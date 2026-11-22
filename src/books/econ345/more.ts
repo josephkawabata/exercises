@@ -477,13 +477,19 @@ $$ prate = \beta_0 + \beta_1\,mrate + \beta_2\,age + \beta_3\,totemp + u, \qquad
 
 Do age and totemp matter jointly, given mrate? Test $H_0:\ \beta_2 = \beta_3 = 0$ against $H_1:$ not $H_0$, so $q = 2$.
 
-- Step 2.$n-k-1 = 1534-3-1 = 1530$ and $\alpha = 0.05$, so $F_c = F_{2,1530} \approx 3$.
+- Step 2. $n-k-1 = 1534-3-1 = 1530$ and $\alpha = 0.05$, so $F_c = F_{2,1530} \approx 3$.
 - The two models (fits and sums of squared residuals):
 
-$$ \begin{aligned} \text{Unrestricted:}\quad \widehat{prate} &= 80.29 + 5.44\,mrate + 0.26\,age - 0.0001\,totemp, & \mathrm{SSR}_U &= 385719,\$$2pt] \text{Restricted:}\quad \widehat{prate} &= 87.36 + 5.82\,mrate, & \mathrm{SSR}_R &= 428385.5. \end{aligned} $$
+$$
+\begin{aligned}
+\text{Unrestricted:}\quad \widehat{prate} &= 80.29 + 5.44\,mrate + 0.26\,age - 0.0001\,totemp, & \mathrm{SSR}_U &= 385719, \\
+\text{Restricted:}\quad \widehat{prate} &= 87.36 + 5.82\,mrate, & \mathrm{SSR}_R &= 428385.5.
+\end{aligned}
+$$
 
-- Step 3.$$ F = \frac{(\mathrm{SSR}_R - \mathrm{SSR}_U)/q}{\mathrm{SSR}_U/(n-k-1)} = \frac{(428385.5 - 385719)/2}{385719/1530} = \frac{21333.25}{252.10} = 84.62. $$
-- Step 4.$84.62 > 3$, so we reject $H_0$: the data provide strong evidence that age and totemp are jointly relevant for prate, conditional on mrate.
+- Step 3.
+$$ F = \frac{(\mathrm{SSR}_R - \mathrm{SSR}_U)/q}{\mathrm{SSR}_U/(n-k-1)} = \frac{(428385.5 - 385719)/2}{385719/1530} = \frac{21333.25}{252.10} = 84.62. $$
+- Step 4. $84.62 > 3$, so we reject $H_0$: the data provide strong evidence that age and totemp are jointly relevant for prate, conditional on mrate.
 
 A test result is not an automatic “keep” or “drop” rule for variables. Which regressors belong in a model is guided by theory, by identification and by the research question — the $F$-test tells us only whether the data can distinguish the restricted model from the unrestricted one.
 

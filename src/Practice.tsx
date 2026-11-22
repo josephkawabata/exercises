@@ -49,8 +49,20 @@ function sourceNote(card: Card, mode: "grok" | "printed"): string {
   return printed ? "Self-check card. The solution shown is the book's." : "Self-check card. Solution worked by Grok Bot, not from the book.";
 }
 
-function chapterOf(id: string): string {
-  return id.split(".")[0] || id;
+function chapterOf(card: { id: string; topic?: string }): string {
+  return card.topic ?? (card.id.split(".")[0] || card.id);
+}
+
+function courseWord(course?: string): string {
+  if (course === "both") return "345 and 366";
+  if (course === "345" || course === "366") return course;
+  return "";
+}
+
+function kindWord(kind?: string): string {
+  if (kind === "pen") return "Pen-and-paper";
+  if (kind === "r") return "R";
+  return "";
 }
 
 type AnswerFilter = "all" | "book";
@@ -130,7 +142,7 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
   const chapters = useMemo(() => {
     const groups: { id: string; items: typeof list }[] = [];
     for (const item of list) {
-      const id = chapterOf(item.c.id);
+      const id = chapterOf(item.c);
       const last = groups[groups.length - 1];
       if (!last || last.id !== id) groups.push({ id, items: [item] });
       else last.items.push(item);
@@ -210,6 +222,7 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
             nextHref={next ? cardHref(book.id, next.c) : undefined}
             answerMode={answerMode(book)}
             day={book.showDays ? opened.i + 1 : undefined}
+            unitWord={book.unitWord ?? "Day "}
           />
         ) : (
           <>
@@ -247,7 +260,7 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
         </div>
         {chapters.map((chapter) => (
           <div key={chapter.id} className="cluster">
-            <h3 className="cluster-title">{(book.clusterWord ?? "Chapter ") + chapter.id}</h3>
+            <h3 className="cluster-title">{/^\d+$/.test(chapter.id) ? (book.clusterWord ?? "Chapter ") + chapter.id : chapter.id}</h3>
             <div className="squares">
               {chapter.items.map((o) => {
                 const mark = status[o.i];
@@ -256,16 +269,19 @@ export function Practice({ book, cardKey: openKey }: { book: Book; cardKey: stri
                 const unmarked = !fromBook(o.c);
                 const mode = answerMode(book);
                 const extra = unmarked ? (mode === "printed" ? ", no answer in the book" : ", answer worked out by Grok Bot, not from the book") : "";
-                const day = book.showDays ? "Day " + (o.i + 1) + ". " : "";
-                const label = day + cardLabel(o.c.id, o.c.p) + ", " + word + extra;
+                const unit = book.unitWord ?? "Day ";
+                const day = book.showDays ? unit + (o.i + 1) + ". " : "";
+                const tag = [courseWord(o.c.course), kindWord(o.c.kind)].filter(Boolean).join(", ");
+                const label = day + (tag ? tag + ". " : "") + cardLabel(o.c.id, o.c.p) + ", " + word + extra;
                 return (
                   <a
                     key={o.i}
-                    className={"sq " + tone}
+                    className={"sq" + (book.showDays ? " num" : "") + (o.c.course ? " c-" + o.c.course : "") + " " + tone}
                     href={cardHref(book.id, o.c)}
                     aria-label={label}
                     title={label}
                   >
+                    {book.showDays ? o.i + 1 : null}
                     {unmarked ? <span className="bot" aria-hidden="true" /> : null}
                   </a>
                 );
@@ -354,6 +370,7 @@ function CardView(props: {
   nextHref?: string;
   answerMode: "grok" | "printed";
   day?: number;
+  unitWord?: string;
 }) {
   const { card, ci, vals, verdicts, sh, st, sec } = props;
   const srcLine = sourceNote(card, props.answerMode);
@@ -417,10 +434,15 @@ function CardView(props: {
   return (
     <article className="card focus-card">
       <div className="card-top">
-        <div className="card-title">{props.day ? "Day " + props.day + " · " : ""}{cardLabel(card.id, card.p)}</div>
+        <div className="card-title">{props.day ? (props.unitWord ?? "Day ") + props.day : cardLabel(card.id, card.p)}</div>
         <div className="muted">{"Card " + (props.at + 1) + " of " + props.total}</div>
       </div>
+      <div className="tags">
+        {courseWord(card.course) ? <span className={"tag c-" + card.course}>{courseWord(card.course)}</span> : null}
+        {kindWord(card.kind) ? <span className="tag">{kindWord(card.kind)}</span> : null}
+      </div>
       <div className="muted">{srcLine}</div>
+      {card.note ? <div className="muted note"><Rich text={card.note} /></div> : null}
       {card.ctx ? (
         <div className="muted context prose">
           {card.ctx.startsWith("Source:") ? <Rich text={card.ctx} /> : <>{"From the text: "}<Rich text={card.ctx} /></>}
@@ -433,6 +455,12 @@ function CardView(props: {
           <figcaption className="muted"><Rich text={f.cap} /></figcaption>
         </figure>
       ))}
+      {card.ex ? (
+        <>
+          <h2 className="ex-head">{card.kind === "r" ? "Exercise. R." : "Exercise. Pen-and-paper."}</h2>
+          <div className="question prose"><Rich text={card.ex} /></div>
+        </>
+      ) : null}
       {card.sf ? (
         <div className="slopes">
           {card.sf.map((x, k) => <SlopeField key={k} f={x.f} lab={x.lab} />)}

@@ -16,7 +16,31 @@ type Field = { l?: string } & (
 );
 type SF = { f: string; lab?: string };
 type Fig = { src: string; cap: string };
-type Card = { id: string; q: string; f: Field[]; h: string; src: string; p?: string; sol?: string[]; ctx?: string; bk?: string; figs?: Fig[]; sf?: SF[]; ssf?: SF; distinct?: number[] };
+type Card = {
+  id: string;
+  q: string;
+  f: Field[];
+  h: string;
+  src: string;
+  p?: string;
+  sol?: string[];
+  ctx?: string;
+  bk?: string;
+  figs?: Fig[];
+  sf?: SF[];
+  ssf?: SF;
+  distinct?: number[];
+  /** 345, 366, or both. */
+  course?: "345" | "366" | "both";
+  /** Topic heading for the single path. */
+  topic?: string;
+  /** pen-and-paper, or an exercise that has to be done in R. */
+  kind?: "pen" | "r";
+  /** Exercise printed after the reading. */
+  ex?: string;
+  /** Short connective label, not from the book. */
+  note?: string;
+};
 type Verdict = { ok: boolean; msg?: string };
 
 // ---------- expression parser ----------

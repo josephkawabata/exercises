@@ -6,7 +6,7 @@ The site is published at <https://josephkawabata.github.io/exercises/>.
 
 ## Books
 
-- [345 and 366 prep](https://josephkawabata.github.io/exercises/#/econ345). 118 days from Ryan T. Godwin, Introduction to Econometrics, CC BY-NC-SA 4.0, and Alessio Gaggero, Econometrics I, CC BY 4.0. Changes: formatted for the web and split into steps. Non-commercial.
+- [345 and 366 prep](https://josephkawabata.github.io/exercises/#/econ345). One numbered path for ECON 366, with ECON 345 where the same idea is simpler. Readings and exercises are excerpts from Ryan T. Godwin (CC BY-NC-SA 4.0), Alessio Gaggero (CC BY 4.0), Hanck, Arnold, Gerber, and Schmelzer (CC BY-NC-SA 4.0), David M. Kaplan (CC BY-NC-SA 4.0), and Wessel N. van Wieringen (CC BY-NC-SA 4.0). Changes: formatted for the web and split into steps. Non-commercial.
 - [Notes on Diffy Qs: Differential Equations for Engineers](https://josephkawabata.github.io/exercises/#/diffyqs), Chapters 0–1, by Jiří Lebl. The book is free at <https://www.jirka.org/diffyqs/> and is used under its Creative Commons license, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Exercise text is the book's. Exercises numbered 101 and up use the answers in the back of the book. Other answer keys and worked solutions were worked out by Grok Bot, are not from the book, and are labeled that way on each card.
 
 ## Add a book

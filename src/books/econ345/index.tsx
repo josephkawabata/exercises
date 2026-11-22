@@ -1,34 +1,60 @@
 import type { Book } from "../types";
-import { CARDS } from "./data";
 import { econ345Info } from "./info";
-import { SECS } from "./sections";
+import { CARDS, SECS } from "./path";
+
+const n366 = CARDS.filter((c) => c.course === "366").length;
+const n345 = CARDS.filter((c) => c.course === "345").length;
+const nboth = CARDS.filter((c) => c.course === "both").length;
 
 export const econ345: Book = {
   ...econ345Info,
+  chapters: CARDS.length + " squares",
+  description: CARDS.length + " squares in one order. ECON 366 first, with ECON 345 where the same idea is simpler. Non-commercial.",
   sections: SECS,
   cards: CARDS,
   practiceTitle: "345 and 366 prep",
-  summary: "118 days. Godwin, Introduction to Econometrics, then Gaggero, Econometrics I.",
-  clusterWord: "Week ",
+  summary: CARDS.length + " squares. One path: 366 gets " + n366 + ", 345 gets " + n345 + ", and " + nboth + " serve both.",
   showDays: true,
+  unitWord: "Square ",
   answerLabels: "printed",
   about: (
     <>
       <p>
-        Ryan T. Godwin, Introduction to Econometrics, 2026. CC BY-NC-SA 4.0. <a href="https://rtgodwin.com/introeconometrics.pdf">https://rtgodwin.com/introeconometrics.pdf</a>. <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">https://creativecommons.org/licenses/by-nc-sa/4.0/</a>
+        One numbered path. Square 1, then square 2, in that order. The tag on each square is the course it mainly serves: 366, 345, or both. Pen-and-paper means a derivation, a proof, or a hand calculation. R means the exercise is done in R.
       </p>
       <p>
-        Alessio Gaggero, Econometrics I, 2026. CC BY 4.0. <a href="https://agaggero.github.io/econometrics-i/">https://agaggero.github.io/econometrics-i/</a>. <a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>
+        Ryan T. Godwin, Introduction to Econometrics, 2026. CC BY-NC-SA 4.0. <a href="https://rtgodwin.com/introeconometrics.pdf">https://rtgodwin.com/introeconometrics.pdf</a>
       </p>
-      <p>Changes: formatted for the web and split into steps. Non-commercial.</p>
-      <p>118 days.</p>
+      <p>
+        Ryan T. Godwin, Econometrics I, 2023. CC BY-NC-SA 4.0. <a href="https://rtgodwin.com/econometrics1.pdf">https://rtgodwin.com/econometrics1.pdf</a>
+      </p>
+      <p>
+        Alessio Gaggero, Econometrics I, 2026. CC BY 4.0. <a href="https://agaggero.github.io/econometrics-i/">https://agaggero.github.io/econometrics-i/</a>
+      </p>
+      <p>
+        Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer, Introduction to Econometrics with R. CC BY-NC-SA 4.0. <a href="https://www.econometrics-with-r.org/">https://www.econometrics-with-r.org/</a>
+      </p>
+      <p>
+        David M. Kaplan, Introductory Econometrics, and Econometrics, Distributional and Nonparametric. CC BY-NC-SA 4.0. <a href="https://kaplandm.github.io/Kaplan_Intro_Econometrics_text.pdf">Introductory Econometrics</a>. <a href="https://kaplandm.github.io/Kaplan_dist_np_text.pdf">Distributional and Nonparametric</a>
+      </p>
+      <p>
+        Wessel N. van Wieringen, Lecture notes on ridge regression. CC BY-NC-SA 4.0. <a href="https://arxiv.org/pdf/1509.09169">https://arxiv.org/pdf/1509.09169</a>
+      </p>
+      <p>
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Changes: formatted for the web and split into steps. Non-commercial. Four figures whose points are missing from Godwin’s PDF are labeled recreation.
+      </p>
+      <p>
+        Not in these open books, so not on this path: seemingly unrelated regressions; random effects (the panel squares are fixed effects and the within estimator); the order and rank conditions and three-stage least squares for a simultaneous system. The demand-and-supply system itself is included.
+      </p>
     </>
   ),
   links: [
     { title: "Introduction to Econometrics (PDF)", site: "rtgodwin.com", href: "https://rtgodwin.com/introeconometrics.pdf" },
+    { title: "Econometrics I (PDF)", site: "rtgodwin.com", href: "https://rtgodwin.com/econometrics1.pdf" },
     { title: "Econometrics I", site: "agaggero.github.io", href: "https://agaggero.github.io/econometrics-i/" },
+    { title: "Introduction to Econometrics with R", site: "econometrics-with-r.org", href: "https://www.econometrics-with-r.org/" },
     { title: "CC BY-NC-SA 4.0", site: "creativecommons.org", href: "https://creativecommons.org/licenses/by-nc-sa/4.0/" },
     { title: "CC BY 4.0", site: "creativecommons.org", href: "https://creativecommons.org/licenses/by/4.0/" },
   ],
-  footer: "Ryan T. Godwin, Introduction to Econometrics, CC BY-NC-SA 4.0. Alessio Gaggero, Econometrics I, CC BY 4.0. Non-commercial. Changes: formatted for the web and split into steps.",
+  footer: "Godwin, Gaggero, Hanck, Arnold, Gerber, Schmelzer, Kaplan, and van Wieringen. CC BY-NC-SA 4.0, and CC BY 4.0 for Gaggero. Non-commercial. Changes: formatted for the web and split into steps.",
 };

@@ -26,8 +26,10 @@ export type Book = BookInfo & {
   footer: string;
   /** Heading in front of each cluster id. Diffy Qs uses "Chapter ". */
   clusterWord?: string;
-  /** Number squares as Day 1, Day 2, in card order. */
+  /** Number squares in card order. The word in front of the number is unitWord. */
   showDays?: boolean;
+  /** Word in front of the running number. Defaults to "Day ". */
+  unitWord?: string;
   /**
    * "grok": squares without a book answer are marked as worked out by Grok Bot.
    * "printed": those squares are marked as having no answer in the book.
