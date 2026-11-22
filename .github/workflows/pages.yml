@@ -28,6 +28,8 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
+      - name: Install poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - name: Check answers
         run: npm run check
       - name: Build
