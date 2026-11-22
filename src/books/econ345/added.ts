@@ -33,9 +33,9 @@ push("g21", G + " Exercise 2.1.", r`Exercise 2.1. Reading a fitted equation. A r
 (a) Interpret $\hat\beta_0$ and $\hat\beta_1$ in words.
 (b) What is the predicted wage of a worker with 12 years of schooling?
 (c) Two workers differ by 4 years of schooling. By how much do their predicted wages differ?
-(d) Why should you be wary of the prediction at educ = 0?`, [{ t: "num", a: "980", l: "(b) predicted wage" }, { t: "num", a: "60", l: "(c) difference" }], r`(a) $\hat\beta_0 = 800$ is the predicted wage at educ = 0 (800 euros per month). $\hat\beta_1 = 15$ is the predicted increase in monthly wage per extra year of schooling.
-(b) $800 + 15 \times 12 = 980$ euros per month.
-(c) $4 \times 15 = 60$ euros per month.
+(d) Why should you be wary of the prediction at educ = 0?`, [{ t: "num", a: "980", l: "(b) predicted wage" }, { t: "num", a: "60", l: "(c) difference" }], r`(a) $\hat\beta_0 = 800$ is the predicted wage at educ = 0 (800 €/month). $\hat\beta_1 = 15$ is the predicted increase in monthly wage per extra year of schooling.
+(b) $800 + 15 \times 12 = 980$ €/month.
+(c) $4 \times 15 = 60$ €/month.
 (d) Because educ = 0 is far below the lowest value in any realistic schooling sample --- the prediction is an extrapolation and may be unreliable.`);
 
 push("fitread", GI + " Section 4.4, pp. 46–48.", r`4.4 The estimated model
@@ -86,12 +86,15 @@ $$b_1 = \frac{\sum_{i=1}^{n} (Y_i - \bar Y)(X_i - \bar X)}{\sum_{i=1}^{n} (X_i -
 
 $$b_0 = \bar Y - b_1 \bar X$$`);
 
-push("ce", GI + " Section 2.4.7, p. 23. Table 2.1.", r`What is $E[Y]$? It is 0.77. This means there is a 77% chance you will have a midterm. $E[Y]$ is an unconditional expectation; it is the mean of $Y$ before you look out the window in the morning and see if there is a blizzard. The conditional expectations, however, are $E[Y \mid X = 1] = 0.20$ and $E[Y \mid X = 0] = 0.96$. This means there is only a 20% chance of a midterm if you see a blizzard in the morning, but a 96% chance with no blizzard.
+push("ce", GI + " Section 2.4.7, p. 23.", r`What is $E[Y]$? It is 0.77. This means there is a 77% chance you will have a midterm. $E[Y]$ is an unconditional expectation; it is the mean of $Y$ before you look out the window in the morning and see if there is a blizzard. The conditional expectations, however, are $E[Y \mid X = 1] = 0.20$ and $E[Y \mid X = 0] = 0.96$. This means there is only a 20% chance of a midterm if you see a blizzard in the morning, but a 96% chance with no blizzard.
 
 Table 2.1: Joint distribution for snow and a canceled midterm.
 
-Blizzard ($X = 1$): Midterm ($Y = 1$) has probability 0.05, and no midterm ($Y = 0$) has probability 0.20.
-No blizzard ($X = 0$): Midterm has probability 0.72, and no midterm has probability 0.03.`);
+[table]
+ | Midterm (Y = 1) | No midterm (Y = 0)
+Blizzard (X = 1) | 0.05 | 0.20
+No blizzard (X = 0) | 0.72 | 0.03
+[/table]`);
 
 push("covq", GI + " Section 2.6, question 2, and section 2.7.", r`2. The joint probability function for $X$ and $Y$ is:
 
@@ -100,7 +103,7 @@ $X = -1$: probability 0 at $Y = -1$, 0.5 at $Y = 0$, and 0 at $Y = 1$.
 
 (a) What is the $\operatorname{Cov}(X, Y)$?
 (b) Are $X$ and $Y$ independent?`, [{ t: "num", a: "0", l: "(a) covariance" }], r`(a) $\operatorname{Cov}(X, Y) = E[(X - \mu_X)(Y - \mu_Y)]$. The means are $\mu_X = 0.5(1) + 0.5(-1) = 0$ and $\mu_Y = 0.25(-1) + 0.5(0) + 0.25(1) = 0$. Then $\operatorname{Cov}(X, Y) = E[XY] = 0.25(1)(-1) + 0.5(-1)(0) + 0.25(1)(1) = 0$.
-(b) Even though the covariance is 0, $X$ and $Y$ are not independent. If we observe $Y = -1$ or $Y = 1$, then $X = 1$. If we observe $Y = 0$, then $X = -1$. Covariance measures linear association. In this example the relationship is non-linear.`);
+(b) Even though the covariance is 0, $X$ and $Y$ are not independent. If we observe $Y = -1$ or $Y = 1$, then $X = 1$. If we observe $Y = 0$, then $X = -1$. Covariance measures linear association.`);
 
 push("g2a", G + " Chapter 2, Gauss–Markov assumptions for SLR.", r`The five Gauss--Markov assumptions for SLR are the bedrock of the rest of this chapter.
 
@@ -171,9 +174,7 @@ push("g22", G + " Exercise 2.2.", r`Exercise 2.2. Algebra of OLS, by hand. Consi
 (b) Numerator $\sum (x_i - \bar x)(y_i - \bar y) = 7$. Denominator $\sum (x_i - \bar x)^2 = 10$. So $\hat\beta_1 = 7/10 = 0.7$.
 (c) $\hat\beta_0 = \bar y - \hat\beta_1 \bar x = 4 - 0.7 \times 3 = 1.9$.`);
 
-push("a5", G + " Appendix A.5.", r`The matrix-form OLS estimator in section 3.4 is $\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}$, which requires $\mathbf{X}'\mathbf{X}$ to be invertible.
-
-The rank of a matrix is the number of linearly independent columns (equivalently, of linearly independent rows). A square $k\times k$ matrix is invertible if and only if it has full rank $k$. For the data matrix $\mathbf{X}$ of dimension $n \times k$, the condition $\operatorname{rank}(\mathbf{X}) = k$ is the no perfect multicollinearity assumption (Wooldridge's MLR.3): no column of $\mathbf{X}$ is an exact linear combination of the others. When this fails, $\mathbf{X}'\mathbf{X}$ is singular and OLS cannot be computed.
+push("a5", G + " Appendix A.5.", r`The rank of a matrix is the number of linearly independent columns (equivalently, of linearly independent rows). A square $k\times k$ matrix is invertible if and only if it has full rank $k$. For the data matrix $\mathbf{X}$ of dimension $n \times k$, the condition $\operatorname{rank}(\mathbf{X}) = k$ is the no perfect multicollinearity assumption (Wooldridge's MLR.3): no column of $\mathbf{X}$ is an exact linear combination of the others. When this fails, $\mathbf{X}'\mathbf{X}$ is singular and OLS cannot be computed.
 
 Perfect multicollinearity (for example including both a dummy for male and a dummy for female plus an intercept --- the dummy-variable trap) makes OLS literally impossible to compute. Near multicollinearity (highly but not perfectly correlated regressors) is a different beast: the estimator still exists, but its variance becomes large.`);
 
@@ -186,7 +187,7 @@ $$X = \begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}.$$`);
 
 push("handb", E1 + " Section 3.7, exercise 2.", r`2. Suppose the population model is $y_i = \beta_1 + \beta_2 x_i + \epsilon_i$. The $y$ and $x$ variables are $y = (-1,\ 2,\ 5)$ and $x = (1,\ 2,\ 3)$.
 
-Calculate the OLS estimators for $\beta_1$ and $\beta_2$.`, [{ t: "num", a: "-4", l: r`intercept $b_1$` }, { t: "num", a: "3", l: r`slope $b_2$` }], r`Answer. The full $X$ matrix is the column of ones beside $x = (1, 2, 3)$. The book’s vector of OLS estimates is
+Calculate the OLS estimators for $\beta_1$ and $\beta_2$.`, [{ t: "num", a: "-4", l: r`intercept $b_1$` }, { t: "num", a: "3", l: r`slope $b_2$` }], r`Answer.
 $$b = \begin{pmatrix} -4 \\ 3 \end{pmatrix}.$$`);
 
 push("fwl", E1 + " Section 4.3.5, the Frisch–Waugh–Lovell theorem.", r`The FWL theorem suggests that the LS estimates for $\beta_2$ in a partitioned model can be obtained through the following steps:
@@ -295,7 +296,7 @@ $$q_i = \gamma_d p_i + x_{di}\beta_d + \epsilon_{di} \qquad (8.1)$$
 
 $$q_i = \gamma_s p_i + x_{si}\beta_s + \epsilon_{si} \qquad (8.2)$$
 
-where equation 8.1 is the demand function and equation 8.2 is the supply function, the $x$ variables are predetermined or exogenous, and the $\gamma$ are the slopes of the demand or supply curves. There are two equations in two unknowns ($p_i$ and $q_i$). In doing so, we see that the solutions for $p_i$ and $q_i$ depend not only on both $x_{di}$ and $x_{si}$, but also on both $\epsilon_{di}$ and $\epsilon_{si}$. In any linear simultaneous equations model, the endogenous variables are necessarily correlated with the error terms. This is a violation of A.5, leading to inconsistency of the LS estimator.`);
+where equation 8.1 is the demand function and equation 8.2 is the supply function, the $x$ variables are predetermined or exogenous, and the $\gamma$ are the slopes of the demand or supply curves. There are two equations in two unknowns (pi and qi). In doing so, we see that the solutions for pi and qi depends not only on both xdi and xsi, but also on both edi and esi. In any linear simultaneous equations model, the endogenous variables are necessarily correlated with the error terms. This is a violation of A.5, leading to inconsistency of the LS estimator.`);
 
 push("semq", E1 + " Section 8.1. The book asks for the proof and does not print it.", r`Prove that the LS estimator is inconsistent when $\operatorname{plim}(n^{-1} X'\epsilon) \ne 0$.`);
 
@@ -316,7 +317,7 @@ Then we say that the time-series sequence, $\epsilon_t$, is “Covariance Statio
 
 Unless a time-series is stationary, we can’t identify and estimate the parameters of the process that is generating its values.
 
-From the MA($\infty$) representation of an AR(1), the variance series will converge to $\sigma_u^2 (1 - \rho^2)^{-1}$, as long as $\rho^2 < 1$.`);
+The series will converge to $\sigma_u^2 (1 - \rho^2)^{-1}$, as long as $\rho^2 < 1$, and this in turn requires that $|\rho| < 1$.`);
 
 push("tsq6", E1 + " Section 12.5, exercise 6. The book does not print the answer.", r`6. Derive the variance of an AR(1) error term, and note the condition on $\rho$ so that the series converges.`);
 
@@ -354,7 +355,7 @@ The null hypothesis is that the AR(1) model has a unit root and the alternative 
 
 $$Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t \quad \Leftrightarrow \quad \Delta Y_t = \beta_0 + \delta Y_{t-1} + u_t,$$
 
-where $\delta = \beta_1 - 1$. The testing problem then becomes $H_0: \delta = 0$ against $H_1: \delta < 0$.
+where $\delta = \beta_1 - 1$. The testing problem then becomes $H_0: \delta = 0$ vs. $H_1: \delta < 0$.
 
 The Dickey-Fuller test can also be applied in an AR($p$) model. The Augmented Dickey-Fuller (ADF) test uses
 
@@ -376,25 +377,19 @@ $$E(Y \mid X_1, \ldots, X_k) = P(Y = 1 \mid X_1, \ldots, X_k).$$
 
 Thus, $\beta_j$ can be interpreted as the change in the probability that $Y_i = 1$, holding constant the other $k - 1$ regressors. It is essential to use robust standard errors since the $u_i$ in a linear probability model are always heteroskedastic.
 
-The estimated simple mortgage-denial line in the book is
-
 $$\widehat{deny} = -0.080 + 0.604 \, P/I\ \text{ratio}.$$
 
-The linear probability model has a major flaw: it assumes the conditional probability function to be linear. This does not restrict $P(Y = 1 \mid X)$ to lie between 0 and 1. For a $P/I$ ratio $\ge 1.75$, the fitted line predicts a denial probability bigger than 1. For applications with a $P/I$ ratio close to 0, the predicted probability of denial is even negative.`);
+The linear probability model has a major flaw: it assumes the conditional probability function to be linear. This does not restrict $P(Y=1\mid X_1,\dots,X_k)$ to lie between 0 and 1. We can easily see this in our reproduction of Figure 11.1 of the book: for $P/I \ ratio \geq 1.75$, (11.2) predicts the probability of a mortgage application denial to be bigger than $1$. For applications with a $P/I$ ratio close to 0, the predicted probability of denial is even negative so that the model has no meaningful interpretation here.`);
 
-push("lpmq", H + " Chapter 11.", r`The estimated regression line is
-
-$$\widehat{deny} = -0.080 + 0.604 \, P/I\ \text{ratio}.$$
-
-Its estimate can be interpreted as follows.`, [{ t: "num", a: "0.00604", abs: 0.0002, l: "change in probability" }], r`Its estimate can be interpreted as follows: a 1 percentage point increase in the $P/I$ ratio leads to an increase in the probability of a loan denial by $0.604 \cdot 0.01 = 0.00604 \approx 0.6\%$.`);
+push("lpmq", H + " Chapter 11.", r`Its estimate can be interpreted as follows: a 1 percentage point increase in $P/I \ ratio$ leads to an increase in the probability of a loan denial by $0.604 \cdot 0.01 = 0.00604 \approx 0.6\%$.`, [{ t: "num", a: "0.00604", abs: 0.0002, l: "change in probability" }], r`Its estimate can be interpreted as follows: a 1 percentage point increase in $P/I \ ratio$ leads to an increase in the probability of a loan denial by $0.604 \cdot 0.01 = 0.00604 \approx 0.6\%$.`);
 
 push("probit", H + " Chapter 11, Probit regression.", r`In Probit regression, the cumulative standard normal distribution function $\Phi(\cdot)$ is used to model the regression function when the dependent variable is binary, that is, we assume
 
 $$E(Y \mid X) = P(Y = 1 \mid X) = \Phi(\beta_0 + \beta_1 X).$$
 
-$\beta_0 + \beta_1 X$ plays the role of a quantile $z$. Remember that $\Phi(z) = P(Z \le z)$ for $Z$ standard normal, such that the Probit coefficient $\beta_1$ is the change in $z$ associated with a one unit change in $X$. Although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function of $X$.
+$\beta_0 + \beta_1 X$ plays the role of a quantile $z$. Remember that $\Phi(z) = P(Z \le z)$, $Z \sim N(0,1)$, such that the Probit coefficient $\beta_1$ is the change in $z$ associated with a one unit change in $X$. Although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function of $X$.
 
-Since the dependent variable is a nonlinear function of the regressors, the coefficient on $X$ has no simple interpretation. The expected change in the probability that $Y = 1$ due to a change in a regressor can be computed as follows:
+Since the dependent variable is a nonlinear function of the regressors, the coefficient on $X$ has no simple interpretation. According to Key Concept 8.1, the expected change in the probability that $Y=1$ due to a change in $P/I \ ratio$ can be computed as follows:
 
 1. Compute the predicted probability that $Y = 1$ for the original value of $X$.
 2. Compute the predicted probability that $Y = 1$ for $X + \Delta X$.
@@ -402,7 +397,7 @@ Since the dependent variable is a nonlinear function of the regressors, the coef
 
 The functional form ensures that the predicted conditional probabilities of a denial lie between 0 and 1.`);
 
-push("probitq", H + " Chapter 11.", r`We use the fitted Probit to compute the predicted change in the denial probability when the $P/I$ ratio is increased from $0.3$ to $0.4$.`, [{ t: "num", a: "0.061", abs: 0.005, l: "change in probability" }], r`We find that an increase in the payment-to-income ratio from $0.3$ to $0.4$ is predicted to increase the probability of denial by approximately $6.1\%$.`);
+push("probitq", H + " Chapter 11.", r`We find that an increase in the payment-to-income ratio from $0.3$ to $0.4$ is predicted to increase the probability of denial by approximately $6.1\%$.`, [{ t: "num", a: "0.061", abs: 0.005, l: "change in probability" }], r`We find that an increase in the payment-to-income ratio from $0.3$ to $0.4$ is predicted to increase the probability of denial by approximately $6.1\%$.`);
 
 push("logit", H + " Chapter 11, Key Concept 11.3.", r`The population Logit regression function is
 
@@ -464,7 +459,7 @@ push("quantq", KQ + " Chapter 5, Discussion Question 5.3. The book does not prin
 (b) Draw a picture of conditional quantile functions where $\beta(0.25) > \beta(0.5)$. Does it look wrong? Why, or why not?
 (c) What is the “economic” interpretation of $\beta(0.25) > \beta(0.5)$?`);
 
-push("ridge", RD + " Section 1.3, Definition 1.1.", r`The ridge regression estimator (Hoerl and Kennard, 1970) is an estimator that deals with (super)-collinearity among the columns of the design matrix. It employs an ad-hoc fix to resolve the (almost) singularity of $X^\top X$. Hoerl and Kennard (1970) simply replace $X^\top X$ by $X^\top X + \lambda I_{pp}$ with $\lambda \in (0, \infty)$. The scalar $\lambda$ is a tuning parameter, henceforth called the ridge parameter, regularization parameter or penalty parameter. The ad-hoc fix solves the singularity as it adds a positive matrix, $\lambda I_{pp}$, to a positive semi-definite one, $X^\top X$, making their sum a positive definite matrix, rendering it invertible.
+push("ridge", RD + " Section 1.3, Definition 1.1.", r`The ridge regression estimator (Hoerl and Kennard, 1970) is an estimator that deals with (super)-collinearity among the columns of the design matrix. It employs an ad-hoc fix to resolve the (almost) singularity of $X^\top X$. Hoerl and Kennard (1970) simply replace X'X by X'X + λ Ipp with λ in (0, ∞). The scalar $\lambda$ is a tuning parameter, henceforth called the ridge parameter, regularization parameter or penalty parameter. The ad-hoc fix solves the singularity as it adds a positive matrix, $\lambda I_{pp}$, to a positive semi-definite one, $X^\top X$, making their sum a positive definite matrix, rendering it invertible.
 
 Definition 1.1. The ridge regression estimator of the regression parameter of the linear regression model is:
 
@@ -474,22 +469,22 @@ for $\lambda \in (0, \infty)$.
 
 The ridge regression estimator is a well-defined estimator, even if $X$ is high-dimensional. However, each choice of the regularization parameter $\lambda$ leads to a different ridge regression estimator.`);
 
-push("ridgeq", RD + " Section 1.14, Question 1.4. The notes do not print the proof.", r`Question 1.4. The coefficients $\beta$ of a linear regression model, $Y = X\beta + \varepsilon$, are estimated by $\hat\beta = (X^\top X)^{-1} X^\top Y$. The associated fitted values are $\hat Y = X\hat\beta = HY$, where $H = X(X^\top X)^{-1} X^\top$ is the hat matrix. The hat matrix $H$ is a projection matrix as it satisfies $H = H^2$. Now consider the ridge estimator $\hat\beta(\lambda) = (X^\top X + \lambda I_{pp})^{-1} X^\top Y$. Let $\hat Y(\lambda) = X\hat\beta(\lambda)$.
+push("ridgeq", RD + " Section 1.14, Question 1.4. The notes do not print the proof.", r`Question 1.4. The coefficients $\beta$ of a linear regression model, $Y = X\beta + \varepsilon$, are estimated by $\hat\beta = (X^\top X)^{-1} X^\top Y$. The hat matrix H is a projection matrix as it satisfies H = H2. Now consider the ridge estimator $\hat\beta(\lambda) = (X^\top X + \lambda I_{pp})^{-1} X^\top Y$. Let $\hat Y(\lambda) = X\hat\beta(\lambda)$.
 
-(a) Show that the ridge hat matrix $H(\lambda) = X(X^\top X + \lambda I_{pp})^{-1} X^\top$ is not a projection matrix for any $\lambda > 0$, i.e. $H(\lambda) \ne [H(\lambda)]^2$.
+(a) Show that the ridge hat matrix $H(\lambda) = X(X^\top X + \lambda I_{pp})^{-1} X^\top$, associated with ridge regression, is not a projection matrix (for any $\lambda > 0$), i.e. $H(\lambda) \ne [H(\lambda)]^2$.
 (b) Show that for any $\lambda > 0$ the ridge fit $\hat Y(\lambda)$ is not orthogonal to the associated ridge residuals.`);
 
 push("lasso", RD + " Chapter 6, the lasso loss.", r`Like ridge regression, lasso regression fits the linear regression model $Y = X\beta + \varepsilon$. Like ridge regression, it does so by minimization of the sum of squares augmented with a penalty. The difference with ridge regression is in the penalty function. Instead of the squared Euclidean norm, lasso regression uses the $\ell_1$-norm: the sum of the absolute values of the regression parameters multiplied by the lasso penalty parameter $\lambda_1$. The lasso regression loss function is
 
 $$L_{\text{lasso}}(\beta; \lambda_1) = \|Y - X\beta\|_2^2 + \lambda_1 \|\beta\|_1 = \sum_{i=1}^{n} (Y_i - X_{i*}\beta)^2 + \lambda_1 \sum_{j=1}^{p} |\beta_j|. \qquad (6.2)$$
 
-The lasso regression estimator is then defined as the minimizer of this loss function. For $\lambda_1$ close to zero, the lasso estimate is close to the maximum likelihood estimate. Whereas for large $\lambda_1$, the penalty term overshadows the sum of squares, and the lasso estimate is small. In general, no explicit expression for the lasso regression estimator exists. For an orthonormal design, $X^\top X = I$, the book gives a soft-threshold expression: each coordinate is pulled toward zero and can be set exactly to zero.`);
+The lasso regression estimator is then defined as the minimizer of this loss function. For $\lambda_1$ close to zero, the lasso estimate is close to the maximum likelihood estimate. Whereas for large $\lambda_1$, the penalty term overshadows the sum of squares, and the lasso estimate is small. In general, no explicit expression for the lasso regression estimator exists. For particular cases, an orthonormal design (Example 6.4) and p = 2 (Example 6.6), an analytic expression for the lasso regression estimator exists.`);
 
 push("lassoq", RD + " Section 6.11, Question 6.12. The notes do not print the proof.", r`Question 6.12. Show that $\|\hat\beta(\lambda_1)\|_1$ is monotone decreasing in $\lambda_1$. Assume orthonormality of the design matrix $X$.`);
 
 push("cv", RD + " Section 1.9.3.", r`Cross-validation requires the regularization parameter to yield a model with good predictive performance. Commonly, this performance is evaluated on novel data. Novel data need not be easy to come by and one has to make do with the data at hand. The setting of “original” and novel data is then mimicked by sample splitting: the data set is divided into two groups of samples. One of these two data sets, called the training set, plays the role of original data on which the model is built. The second, called the test set, plays the role of the novel data and is used to evaluate the prediction performance of the model built on the training data set. This procedure is done for a collection of possible penalty parameter choices. The penalty parameter that yields the model with the best prediction performance is to be preferred.
 
-When the repetitive splitting of the data set is done randomly, samples may accidentally end up in a vast majority of the splits in either the training or the test set. To avoid this, $k$-fold cross-validation structures the data splitting. The samples are divided into $k$ more or less equally sized exhaustive and mutually exclusive subsets. In turn, one of these subsets plays the role of the test set while the union of the remaining subsets constitutes the training set.`);
+When the repetitive splitting of the data set is done randomly, samples may accidently end up in a vast majority of the splits in either the training or the test set. To avoid this, $k$-fold cross-validation structures the data splitting. The samples are divided into $k$ more or less equally sized exhaustive and mutually exclusive subsets. In turn, one of these subsets plays the role of the test set while the union of the remaining subsets constitutes the training set.`);
 
 push("cvq", RD + " Section 1.9.3.", r`This may be fully excluded when choosing $k = n$.`, [], r`This particular case is referred to as leave-one-out cross-validation (LOOCV).`);
 
@@ -510,7 +505,7 @@ The model with the smallest AIC is necessarily the best for:
 A. Both prediction and causal identification of individual coefficients.
 B. Prediction of $y$ given $x$ --- but not necessarily for identifying the causal effect of a specific regressor.
 C. Causal identification only.
-D. Neither, since AIC is always misleading.`, [{ t: "mc", a: 1, o: [r`Both prediction and causal identification of individual coefficients.`, r`Prediction of $y$ given $x$ --- but not necessarily for identifying the causal effect of a specific regressor.`, r`Causal identification only.`, r`Neither, since AIC is always misleading.`] }], r`Answer: B. AIC is a predictive criterion. Causal identification depends on $\mathbb{E}[u \mid x] = 0$, which is a statement about the design, not about model fit.`);
+D. Neither, since AIC is always misleading.`, [{ t: "mc", a: 1, o: [r`Both prediction and causal identification of individual coefficients.`, r`Prediction of $y$ given $x$ --- but not necessarily for identifying the causal effect of a specific regressor.`, r`Causal identification only.`, r`Neither, since AIC is always misleading.`] }], r`Answer: B. AIC is a predictive criterion.`);
 
 push("quad", G + " Chapter 6, Quadratic models.", r`The simplest way to capture a nonlinear shape is to add the square of a regressor:
 

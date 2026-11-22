@@ -369,6 +369,20 @@ select,
 .tag.c-both { border-color: #1f6b45; }
 .ex-head { font-size: 1.05rem; margin: 0; }
 .note { font-style: italic; }
+.callout {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--border-strong);
+  background: color-mix(in srgb, var(--surface) 70%, var(--border));
+}
+.callout-k {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 a.sq:hover,
 a.sq:focus-visible {

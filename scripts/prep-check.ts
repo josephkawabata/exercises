@@ -54,7 +54,8 @@ for (const [i, card] of CARDS.entries()) {
   if (card.course !== "345" && card.course !== "366" && card.course !== "both") failures.push("no course " + card.id);
   if (!card.topic) failures.push("no topic " + card.id);
   if (card.kind !== "pen" && card.kind !== "r") failures.push("no kind " + card.id);
-  const exercise = !!(card.ex || card.bk || card.f.length || /\?/.test(card.q) || /Calculate|Explain|Prove|Show|Exercise/.test(card.q));
+  const blob = card.q + (card.ex ?? "");
+  const exercise = !!(card.ex || card.bk || card.f.length || /\?/.test(blob) || /Calculate|Explain|Prove|Show|Exercise|Question/.test(blob));
   if (!exercise) failures.push("no exercise " + card.id);
   for (const chunk of texts(card)) {
     for (const part of splitRich(chunk)) {
@@ -83,6 +84,28 @@ if (usesFormula >= 0 && usesFormula < formulaAt) failures.push("equation 5.7 is 
 const previous = CARDS.findIndex((c) => /previous chapter/.test(c.q));
 const chapter2 = CARDS.findIndex((c) => /conditional expectation/i.test(c.q) || /Chapter 2/.test(c.note ?? ""));
 if (previous >= 0 && chapter2 > previous) failures.push("Godwin chapter 2 is still after the reading that calls it the previous chapter");
+
+const order: { token: string; definedBy: RegExp }[] = [
+  { token: "M_1", definedBy: /projection|residual-maker|M_X|M_1 =/ },
+  { token: "M_2", definedBy: /projection|residual-maker|M_X|M_2 =/ },
+  { token: "P_Z", definedBy: /projection|P_Z =/ },
+  { token: "plim", definedBy: /probability limit|Definition 7\.1/ },
+  { token: "Slutsky", definedBy: /Slutsky.s [Tt]heorem/ },
+  { token: "LP(", definedBy: /linear projection/ },
+  { token: "AR(1)", definedBy: /autoregressive|AR\(1\) process|Autoregressive/ },
+  { token: "MA(1)", definedBy: /moving average|MA\(1\) process|Moving average/ },
+];
+for (const rule of order) {
+  const first = CARDS.findIndex((c) => (c.q + (c.ex ?? "") + (c.bk ?? "")).includes(rule.token));
+  if (first < 0) continue;
+  const text = CARDS[first].q + (CARDS[first].ex ?? "") + (CARDS[first].bk ?? "");
+  if (!rule.definedBy.test(text)) failures.push(rule.token + " is used in square " + (first + 1) + " before it is defined");
+}
+
+const figsNeeded = ["econ345/kaplan-12-1.png", "econ345/kaplan-12-2.png"];
+for (const src of figsNeeded) {
+  if (!CARDS.some((c) => (c.figs ?? []).some((f) => f.src === src))) failures.push("figure not attached " + src);
+}
 
 const of366 = CARDS.filter((c) => c.course === "366");
 const pen366 = of366.filter((c) => c.kind === "pen").length;
